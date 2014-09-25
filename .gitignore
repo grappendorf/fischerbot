@@ -1,4 +1,6 @@
-build
+build/*
+!build/*.mk
+!build/makefile
 target
 *.s#?
 *.b#?
