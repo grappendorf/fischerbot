@@ -1,7 +1,10 @@
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/mongoSettings.xml
+.idea/dataSources.xml
+.idea/dataSources.ids
+.idea/atlassian-ide-plugin.xml
 build/*
-!build/*.mk
-!build/makefile
+!build/.keep
 *.s#?
 *.b#?
-eagle.epf
-target

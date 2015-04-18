@@ -1,0 +1,15 @@
+mega1284-16.name=ATmega1284-External 16Mhz
+mega1284-16.upload.tool=avrdude
+mega1284-16.build.mcu=atmega1284p
+mega1284-16.build.f_cpu=16000000L
+mega1284-16.build.core=arduino
+mega1284-16.build.variant=mega1284
+mega1284-16.upload.maximum_size=128000
+
+mega1284-20.name=ATmega1284-External 20Mhz
+mega1284-20.upload.tool=avrdude
+mega1284-20.build.mcu=atmega1284p
+mega1284-20.build.f_cpu=20000000L
+mega1284-20.build.core=arduino
+mega1284-20.build.variant=mega1284
+mega1284-20.upload.maximum_size=128000
