@@ -99,7 +99,7 @@ State state = POWER_ON;
 unsigned int MIN_CENTER_DISTANCE_TO_OBSTACLE = 25;
 unsigned int MIN_SIDE_DISTANCE_TO_OBSTACLE = 25;
 
-void buzz(int pin, long frequency, long length) {
+void buzz(uint8_t pin, long frequency, long length) {
   long delayValue = 1000000 / frequency / 2;
   long numCycles = frequency * length / 1000;
   for (long i = 0; i < numCycles; i++) {
@@ -220,44 +220,57 @@ void mainStates() {
       buzz(PIN_BUZZ, 783, 100);
       buzz(PIN_BUZZ, 880, 200);
       light(NONE);
+      SRF02::setInterval(1000);
       state = WAIT;
       break;
 
     case WAIT:
-      SRF02::setInterval(0);
-      if (bumperLeft.fallingEdge() && bumperRight.fallingEdge()) {
+      if (bumperLeft.read() == LOW && bumperRight.read() == LOW) {
         stateEngine = exploreStates;
         state = EXPLORE_START;
         break;
       }
       if (Serial.available()) {
         const String &s = Serial.readStringUntil('\n');
-        light(BOTH);
-        delay(100);
-        light(NONE);
-        Serial.print("wl=");
-        Serial.print(WheelEncoder::getLeftDistance());
-        Serial.print(",wr=");
-        Serial.print(WheelEncoder::getRightDistance());
-        Serial.print(",dl=");
-        Serial.print(srf02Left.read());
-        Serial.print(",dc=");
-        Serial.print(srf02Center.read());
-        Serial.print(",dr=");
-        Serial.print(srf02Right.read());
-        Serial.print(",c=");
-        Serial.print(cmps03.read());
-        Serial.print(",bl=");
-        Serial.print(bumperLeft.read());
-        Serial.print(",br=");
-        Serial.print(bumperRight.read());
-        Serial.println();
+        if (s.startsWith("f")) {
+          motor(FORWARD);
+        } else if (s.startsWith("b")) {
+          motor(BACKWARD);
+        } else if (s.startsWith("l")) {
+          motor(TURN_LEFT);
+        } else if (s.startsWith("r")) {
+          motor(TURN_RIGHT);
+        } else if (s.startsWith("s")) {
+          motor(HALT);
+        } else {
+          light(BOTH);
+          delay(100);
+          light(NONE);
+          Serial.print("wl=");
+          Serial.print(WheelEncoder::getLeftDistance());
+          Serial.print(",wr=");
+          Serial.print(WheelEncoder::getRightDistance());
+          Serial.print(",dl=");
+          Serial.print(srf02Left.read());
+          Serial.print(",dc=");
+          Serial.print(srf02Center.read());
+          Serial.print(",dr=");
+          Serial.print(srf02Right.read());
+          Serial.print(",c=");
+          Serial.print(cmps03.read());
+          Serial.print(",bl=");
+          Serial.print(bumperLeft.read());
+          Serial.print(",br=");
+          Serial.print(bumperRight.read());
+          Serial.println();
+        }
       }
       break;
 
     default:
       break;
   }
+
 }
 
 /**
