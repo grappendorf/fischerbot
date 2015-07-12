@@ -37,8 +37,8 @@
  * UART select          PB4       4
  * Light left           PB0       0
  * Light right          PB1       1
- * Bumper left          PB3       2
- * Bumper right         PB2       3
+ * Bumper left          PB3       3
+ * Bumper right         PB2       2
  * Motor left forward   PD4       12
  * Motor left backward  PC3       19
  * Motor right forward  PD5       13
@@ -54,7 +54,6 @@
 #include "Bounce.h"
 #include "CMPS03.h"
 #include "SRF02.h"
-#include "WiFly.h"
 #include "WheelEncoder.h"
 
 const long BAUD_RATE = 57600;
@@ -64,8 +63,8 @@ const uint8_t PIN_POWER = 18;
 const uint8_t PIN_UART_SELECT = 4;
 const uint8_t PIN_LIGHT_L = 0;
 const uint8_t PIN_LIGHT_R = 1;
-const uint8_t PIN_BUMP_L = 2;
-const uint8_t PIN_BUMP_R = 3;
+const uint8_t PIN_BUMP_L = 3;
+const uint8_t PIN_BUMP_R = 2;
 const uint8_t PIN_MOT_LF = 12;
 const uint8_t PIN_MOT_LB = 19;
 const uint8_t PIN_MOT_RF = 13;
@@ -87,10 +86,8 @@ SRF02 srf02Left(0x72);
 SRF02 srf02Center(0x70);
 SRF02 srf02Right(0x71);
 
-unsigned long lastMillis = 0;
-
 enum State {
-  POWER_ON, WAIT, EXPLORE_START, EXPLORE_FORWARD, EXPLORE_TURN, EXPLORE_STRUCK
+  POWER_ON, WAIT, EXPLORE_START, EXPLORE_FORWARD, EXPLORE_TURN, EXPLORE_PANIC
 };
 
 void mainStates();
@@ -172,7 +169,7 @@ void exploreStates() {
       light(NONE);
       motor(FORWARD);
       if (bumperRight.fallingEdge() || bumperLeft.fallingEdge()) {
-        state = EXPLORE_STRUCK;
+        state = EXPLORE_PANIC;
         break;
       }
       if (srf02Center.read() < MIN_CENTER_DISTANCE_TO_OBSTACLE || srf02Left.read() < MIN_SIDE_DISTANCE_TO_OBSTACLE ||
@@ -193,12 +190,12 @@ void exploreStates() {
         } else if (srf02Right.read() >= MIN_SIDE_DISTANCE_TO_OBSTACLE) {
           motor(TURN_RIGHT);
         } else {
-          state = EXPLORE_STRUCK;
+          state = EXPLORE_PANIC;
         }
       }
       break;
 
-    case EXPLORE_STRUCK:
+    case EXPLORE_PANIC:
       light(NONE);
       motor(HALT);
       stateEngine = mainStates;
@@ -213,33 +210,32 @@ void exploreStates() {
 void mainStates() {
   switch (state) {
     case POWER_ON:
-      if (millis() > lastMillis + 500) {
-        light(BOTH);
-        buzz(PIN_BUZZ, 523, 150);
-        buzz(PIN_BUZZ, 659, 150);
-        buzz(PIN_BUZZ, 783, 150);
-        buzz(PIN_BUZZ, 880, 150);
-        delay(100);
-        buzz(PIN_BUZZ, 783, 100);
-        buzz(PIN_BUZZ, 880, 200);
-        light(NONE);
-        state = WAIT;
-      }
+      delay(250);
+      light(BOTH);
+      buzz(PIN_BUZZ, 523, 150);
+      buzz(PIN_BUZZ, 659, 150);
+      buzz(PIN_BUZZ, 783, 150);
+      buzz(PIN_BUZZ, 880, 150);
+      delay(100);
+      buzz(PIN_BUZZ, 783, 100);
+      buzz(PIN_BUZZ, 880, 200);
+      light(NONE);
+      state = WAIT;
       break;
 
     case WAIT:
       SRF02::setInterval(0);
-      if (bumperLeft.fallingEdge() || bumperRight.fallingEdge()) {
+      if (bumperLeft.fallingEdge() && bumperRight.fallingEdge()) {
         stateEngine = exploreStates;
         state = EXPLORE_START;
         break;
       }
       if (Serial.available()) {
-        Serial.read();
+        const String &s = Serial.readStringUntil('\n');
         light(BOTH);
         delay(100);
         light(NONE);
-        Serial.print("\r\nwl=");
+        Serial.print("wl=");
         Serial.print(WheelEncoder::getLeftDistance());
         Serial.print(",wr=");
         Serial.print(WheelEncoder::getRightDistance());
@@ -255,7 +251,7 @@ void mainStates() {
         Serial.print(bumperLeft.read());
         Serial.print(",br=");
         Serial.print(bumperRight.read());
-        Serial.print("\r\n");
+        Serial.println();
       }
       break;
 

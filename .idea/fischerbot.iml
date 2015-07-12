@@ -74,9 +74,6 @@
     <content url="file:///opt/arduino-1.6.3/hardware/arduino/avr/cores/arduino/wiring_shift.c">
       <sourceFolder url="file:///opt/arduino-1.6.3/hardware/arduino/avr/cores/arduino/wiring_shift.c" isTestSource="false" />
     </content>
-    <content url="file:///opt/arduino-1.6.3/hardware/arduino/avr/libraries/SoftwareSerial/SoftwareSerial.cpp">
-      <sourceFolder url="file:///opt/arduino-1.6.3/hardware/arduino/avr/libraries/SoftwareSerial/SoftwareSerial.cpp" isTestSource="false" />
-    </content>
     <content url="file:///opt/arduino-1.6.3/hardware/arduino/avr/libraries/Wire/Wire.cpp">
       <sourceFolder url="file:///opt/arduino-1.6.3/hardware/arduino/avr/libraries/Wire/Wire.cpp" isTestSource="false" />
     </content>
@@ -94,12 +91,6 @@
     </content>
     <content url="file:///opt/arduino-libraries/WheelEncoder/WheelEncoder.cpp">
       <sourceFolder url="file:///opt/arduino-libraries/WheelEncoder/WheelEncoder.cpp" isTestSource="false" />
-    </content>
-    <content url="file:///opt/arduino-libraries/WiFly/WiFly.cpp">
-      <sourceFolder url="file:///opt/arduino-libraries/WiFly/WiFly.cpp" isTestSource="false" />
-    </content>
-    <content url="file:///opt/arduino-libraries/WiFly/WiFlyClient.cpp">
-      <sourceFolder url="file:///opt/arduino-libraries/WiFly/WiFlyClient.cpp" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
